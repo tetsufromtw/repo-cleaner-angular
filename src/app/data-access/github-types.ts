@@ -79,9 +79,8 @@ export interface GitHubListResponse<T> {
 export interface GitHubError {
   message: string;
   errors?: Array<{
-    resource: string;
-    field: string;
-    code: string;
+    repository: GitHubRepository;
+    error: string;
   }>;
   documentation_url?: string;
 }
@@ -127,20 +126,20 @@ export interface ListRepositoriesOptions {
 // バッチ操作結果
 export interface BatchOperationResult {
   success: GitHubRepository[];
-  failed: Array<{
+  errors: Array<{
     repository: GitHubRepository;
     error: string;
   }>;
-  summary: {
-    total: number;
-    successful: number;
-    failed: number;
-    skipped: number;
-  };
+  total: number;
+  completed: number;
+  remaining: number;
 }
 
 // 操作タイプ
-export type RepositoryOperation = 'archive' | 'unarchive' | 'delete';
+export type RepositoryOperation = {
+  type: 'archive' | 'unarchive' | 'delete';
+  repositoryIds: number[];
+};
 
 // フィルター条件
 export interface RepositoryFilters {
@@ -177,6 +176,14 @@ export interface RepositoryFilters {
   hasWiki?: boolean;
   hasPages?: boolean;
   hasDownloads?: boolean;
+  
+  // 表示フィルター
+  visibility?: 'all' | 'public' | 'private';
+  
+  // クイックフィルター
+  inactive?: boolean;
+  noStars?: boolean;
+  search?: string;
 }
 
 // ソート設定

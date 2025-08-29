@@ -24,10 +24,8 @@ export class RepositoryStore {
   private readonly _repositories = signal<GitHubRepository[]>([]);
   private readonly _selectedIds = signal<Set<number>>(new Set());
   private readonly _filters = signal<RepositoryFilters>({});
-  private readonly _sort = signal<RepositorySortConfig>({
-    field: 'updated_at',
-    direction: 'desc'
-  });
+  private readonly _sortBy = signal<string>('updated_at');
+  private readonly _sortDirection = signal<'asc' | 'desc'>('desc');
   private readonly _loading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
   private readonly _lastFetch = signal<Date | null>(null);
@@ -47,7 +45,9 @@ export class RepositoryStore {
   readonly repositories = this._repositories.asReadonly();
   readonly selectedIds = this._selectedIds.asReadonly();
   readonly filters = this._filters.asReadonly();
-  readonly sort = this._sort.asReadonly();
+  readonly sortBy = this._sortBy.asReadonly();
+  readonly sortDirection = this._sortDirection.asReadonly();
+  readonly isLoading = this._loading.asReadonly();
   readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
   readonly lastFetch = this._lastFetch.asReadonly();
@@ -57,10 +57,11 @@ export class RepositoryStore {
   readonly filteredRepositories = computed(() => {
     const repos = this._repositories();
     const filters = this._filters();
-    const sort = this._sort();
+    const sortBy = this._sortBy();
+    const sortDirection = this._sortDirection();
     
     let filtered = this.applyFilters(repos, filters);
-    filtered = this.applySorting(filtered, sort);
+    filtered = this.applySorting(filtered, { field: sortBy as any, direction: sortDirection });
     
     return filtered;
   });
@@ -128,6 +129,13 @@ export class RepositoryStore {
   }
   
   /**
+   * 個別フィルターを設定
+   */
+  setFilter(key: string, value: any): void {
+    this._filters.update(current => ({ ...current, [key]: value }));
+  }
+  
+  /**
    * フィルターを更新
    */
   updateFilters(filters: Partial<RepositoryFilters>): void {
@@ -144,10 +152,22 @@ export class RepositoryStore {
   }
   
   /**
+   * 全フィルターをクリア
+   */
+  clearFilters(): void {
+    this._filters.set({});
+    this.clearSelection();
+  }
+  
+  /**
    * ソート設定を更新
    */
-  updateSort(sort: RepositorySortConfig): void {
-    this._sort.set(sort);
+  setSortBy(sortBy: string): void {
+    this._sortBy.set(sortBy);
+  }
+  
+  setSortDirection(direction: 'asc' | 'desc'): void {
+    this._sortDirection.set(direction);
   }
   
   /**
@@ -221,6 +241,13 @@ export class RepositoryStore {
    */
   clearSelection(): void {
     this._selectedIds.set(new Set());
+  }
+  
+  /**
+   * リポジトリが選択されているかチェック
+   */
+  isSelected(repositoryId: number): boolean {
+    return this._selectedIds().has(repositoryId);
   }
   
   /**
@@ -421,5 +448,118 @@ export class RepositoryStore {
       
       return sort.direction === 'desc' ? -comparison : comparison;
     });
+  }
+  
+  /**
+   * 個別リポジトリの選択
+   */
+  selectRepository(repositoryId: number): void {
+    this._selectedIds.update(current => {
+      const newSet = new Set(current);
+      newSet.add(repositoryId);
+      return newSet;
+    });
+  }
+  
+  /**
+   * 個別リポジトリの選択解除
+   */
+  deselectRepository(repositoryId: number): void {
+    this._selectedIds.update(current => {
+      const newSet = new Set(current);
+      newSet.delete(repositoryId);
+      return newSet;
+    });
+  }
+  
+  /**
+   * 全選択解除
+   */
+  deselectAll(): void {
+    this._selectedIds.set(new Set());
+  }
+  
+  /**
+   * 単一リポジトリのアーカイブ
+   */
+  async archiveRepository(repositoryId: number): Promise<void> {
+    const result = await this.executeBatchOperation({
+      type: 'archive',
+      repositoryIds: [repositoryId]
+    });
+    
+    if (result.errors.length > 0) {
+      throw new Error(result.errors[0].error);
+    }
+  }
+  
+  /**
+   * 単一リポジトリのアーカイブ解除
+   */
+  async unarchiveRepository(repositoryId: number): Promise<void> {
+    const result = await this.executeBatchOperation({
+      type: 'unarchive', 
+      repositoryIds: [repositoryId]
+    });
+    
+    if (result.errors.length > 0) {
+      throw new Error(result.errors[0].error);
+    }
+  }
+  
+  /**
+   * 単一リポジトリの削除
+   */
+  async deleteRepository(repositoryId: number): Promise<void> {
+    const result = await this.executeBatchOperation({
+      type: 'delete',
+      repositoryIds: [repositoryId]
+    });
+    
+    if (result.errors.length > 0) {
+      throw new Error(result.errors[0].error);
+    }
+  }
+  
+  /**
+   * バッチアーカイブ
+   */
+  async batchArchive(repositoryIds: number[]): Promise<void> {
+    const result = await this.executeBatchOperation({
+      type: 'archive',
+      repositoryIds
+    });
+    
+    if (result.errors.length > 0) {
+      throw new Error(`${result.errors.length} repositories failed to archive`);
+    }
+  }
+  
+  /**
+   * バッチアーカイブ解除
+   */
+  async batchUnarchive(repositoryIds: number[]): Promise<void> {
+    const result = await this.executeBatchOperation({
+      type: 'unarchive',
+      repositoryIds
+    });
+    
+    if (result.errors.length > 0) {
+      throw new Error(`${result.errors.length} repositories failed to unarchive`);
+    }
+  }
+  
+  /**
+   * バッチ削除
+   */
+  async batchDelete(repositoryIds: number[]): Promise<void> {
+    const result = await this.executeBatchOperation({
+      type: 'delete',
+      repositoryIds
+    });
+    
+    if (result.errors.length > 0) {
+      throw new Error(`${result.errors.length} repositories failed to delete`);
+    }
   }
 }

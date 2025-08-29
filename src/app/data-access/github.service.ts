@@ -135,13 +135,10 @@ export class GitHubService {
   ): Observable<BatchOperationResult> {
     const results: BatchOperationResult = {
       success: [],
-      failed: [],
-      summary: {
-        total: repositories.length,
-        successful: 0,
-        failed: 0,
-        skipped: 0
-      }
+      errors: [],
+      total: repositories.length,
+      completed: 0,
+      remaining: repositories.length
     };
     
     // 同時実行数を制限したパラレル処理
@@ -159,15 +156,15 @@ export class GitHubService {
             next: (result) => {
               if (result) {
                 results.success.push(result);
-                results.summary.successful++;
               }
               completed++;
               running--;
+              results.completed++;
+              results.remaining--;
               
               // 進捗を通知
               observer.next({
-                ...results,
-                summary: { ...results.summary }
+                ...results
               });
               
               if (completed === repositories.length) {
@@ -177,18 +174,18 @@ export class GitHubService {
               }
             },
             error: (error) => {
-              results.failed.push({
+              results.errors.push({
                 repository: repo,
                 error: error.message || 'Unknown error'
               });
-              results.summary.failed++;
               completed++;
               running--;
+              results.completed++;
+              results.remaining--;
               
               // 進捗を通知
               observer.next({
-                ...results,
-                summary: { ...results.summary }
+                ...results
               });
               
               if (completed === repositories.length) {
@@ -226,7 +223,7 @@ export class GitHubService {
       }
     }
     
-    switch (operation) {
+    switch (operation.type) {
       case 'archive':
         return repo.archived ? of(null) : this.archiveRepository(owner, name);
       case 'unarchive':
@@ -234,7 +231,7 @@ export class GitHubService {
       case 'delete':
         return this.deleteRepository(owner, name).pipe(map(() => repo));
       default:
-        return throwError(() => new Error(`Unknown operation: ${operation}`));
+        return throwError(() => new Error(`Unknown operation: ${operation.type}`));
     }
   }
   
