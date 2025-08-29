@@ -203,21 +203,33 @@ export class RepoListComponent implements OnInit {
   async deleteRepository(repo: GitHubRepository) {
     if (this.isProcessing()) return;
 
+    console.log(`🎯 [UI] Attempting to delete repository:`, repo);
+    console.log(`🎯 [UI] Repository owner: ${repo.owner.login}`);
+    console.log(`🎯 [UI] Repository name: ${repo.name}`);
+    console.log(`🎯 [UI] Repository ID: ${repo.id}`);
+
     // TODO: Add confirmation dialog
     const confirmed = window.confirm(
       `Are you sure you want to delete "${repo.name}"? This action cannot be undone.`
     );
     
-    if (!confirmed) return;
+    if (!confirmed) {
+      console.log(`🚫 [UI] User cancelled deletion of ${repo.name}`);
+      return;
+    }
 
+    console.log(`🚀 [UI] Starting deletion process for ${repo.name}`);
     this.isProcessing.set(true);
     try {
+      console.log(`📞 [UI] Calling store.deleteRepository with ID: ${repo.id}`);
       await this.store.deleteRepository(repo.id);
+      console.log(`✅ [UI] Successfully deleted repository: ${repo.name}`);
     } catch (error) {
-      console.error('Failed to delete repository:', error);
+      console.error(`❌ [UI] Failed to delete repository ${repo.name}:`, error);
       // TODO: Add user-friendly error notification
     } finally {
       this.isProcessing.set(false);
+      console.log(`🔄 [UI] Processing finished for ${repo.name}`);
     }
   }
 

@@ -511,13 +511,31 @@ export class RepositoryStore {
    * 単一リポジトリの削除
    */
   async deleteRepository(repositoryId: number): Promise<void> {
+    console.log(`🗄️ [STORE] deleteRepository called with ID: ${repositoryId}`);
+    
+    // Find the repository info for logging
+    const repo = this._repositories().find(r => r.id === repositoryId);
+    if (repo) {
+      console.log(`🗄️ [STORE] Found repository: ${repo.owner.login}/${repo.name}`);
+    } else {
+      console.warn(`⚠️ [STORE] Repository with ID ${repositoryId} not found in local store`);
+    }
+    
+    console.log(`🗄️ [STORE] Calling executeBatchOperation with delete operation`);
     const result = await this.executeBatchOperation({
       type: 'delete',
       repositoryIds: [repositoryId]
     });
     
+    console.log(`🗄️ [STORE] Batch operation result:`, result);
+    console.log(`🗄️ [STORE] Successful deletions: ${result.success.length}`);
+    console.log(`🗄️ [STORE] Failed deletions: ${result.errors.length}`);
+    
     if (result.errors.length > 0) {
+      console.error(`🗄️ [STORE] Deletion failed with error:`, result.errors[0]);
       throw new Error(result.errors[0].error);
+    } else {
+      console.log(`✅ [STORE] Repository deletion completed successfully`);
     }
   }
   

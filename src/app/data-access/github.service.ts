@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, timer, of } from 'rxjs';
-import { map, catchError, retry, mergeMap, delay } from 'rxjs/operators';
+import { map, catchError, retry, mergeMap, delay, tap } from 'rxjs/operators';
 
 import {
   GitHubRepository,
@@ -120,9 +120,26 @@ export class GitHubService {
   deleteRepository(owner: string, repo: string): Observable<void> {
     const url = `/repos/${owner}/${repo}`;
     
+    console.log(`🗑️ [DELETE] Attempting to delete repository: ${owner}/${repo}`);
+    console.log(`🗑️ [DELETE] Full URL: ${this.baseURL}${url}`);
+    console.log(`🗑️ [DELETE] Token exists: ${Boolean(this.token)}`);
+    console.log(`🗑️ [DELETE] Token starts with: ${this.token.substring(0, 10)}...`);
+    
     return this.makeRequest<void>(url, {
       method: 'DELETE'
-    });
+    }).pipe(
+      tap({
+        next: (result) => {
+          console.log(`✅ [DELETE] Successfully deleted repository: ${owner}/${repo}`, result);
+        },
+        error: (error) => {
+          console.error(`❌ [DELETE] Failed to delete repository: ${owner}/${repo}`, error);
+          console.error(`❌ [DELETE] Error status: ${error?.status}`);
+          console.error(`❌ [DELETE] Error message: ${error?.message}`);
+          console.error(`❌ [DELETE] Full error:`, error);
+        }
+      })
+    );
   }
   
   /**
