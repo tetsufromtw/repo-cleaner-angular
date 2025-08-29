@@ -256,42 +256,6 @@
     }
   }
   
-  .important-note {
-    display: flex;
-    gap: var(--space-sm);
-    align-items: flex-start;
-    margin-top: var(--space-lg);
-    padding: var(--space-md);
-    background: rgba(184, 35, 24, 0.08);
-    border: 1px solid rgba(184, 35, 24, 0.2);
-    border-radius: var(--radius);
-    
-    mat-icon {
-      color: var(--danger);
-      font-size: 1.25rem;
-      margin-top: 2px;
-    }
-    
-    div {
-      @include mix.font-body();
-      color: var(--fg);
-      font-size: 0.875rem;
-      line-height: 1.5;
-      
-      strong {
-        font-weight: 600;
-      }
-      
-      code {
-        background: rgba(159, 136, 200, 0.15);
-        color: var(--primary);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-        font-size: 0.8em;
-      }
-    }
-  }
 }
 
 .action-section {
