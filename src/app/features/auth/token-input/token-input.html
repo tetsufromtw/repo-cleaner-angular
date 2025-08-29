@@ -99,9 +99,22 @@
               <ol class="help-steps">
                 <li>Go to GitHub → Settings → Developer settings</li>
                 <li>Click "Personal access tokens" → "Tokens (classic)"</li>
-                <li>Generate new token with <strong>repo</strong> permissions</li>
+                <li>Generate new token with the following permissions:
+                  <ul class="permissions-list">
+                    <li><strong>repo</strong> (Full control of private repositories)</li>
+                    <li><strong>delete_repo</strong> (Delete repositories) <span class="required">← Required for deletion</span></li>
+                  </ul>
+                </li>
                 <li>Copy and paste the token above</li>
               </ol>
+              
+              <div class="important-note">
+                <mat-icon>warning</mat-icon>
+                <div>
+                  <strong>Important:</strong> To delete repositories, your token must include the 
+                  <code>delete_repo</code> scope. Without this permission, deletion operations will fail.
+                </div>
+              </div>
             </div>
             
             <!-- Action Button -->
