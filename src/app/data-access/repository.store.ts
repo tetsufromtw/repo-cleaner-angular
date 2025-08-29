@@ -106,25 +106,44 @@ export class RepositoryStore {
     const lastFetch = this._lastFetch();
     const cacheExpiry = 5 * 60 * 1000; // 5分キャッシュ
     
+    console.log(`🔄 [STORE] loadRepositories called, forceRefresh: ${forceRefresh}`);
+    
     // キャッシュチェック
     if (!forceRefresh && lastFetch && Date.now() - lastFetch.getTime() < cacheExpiry) {
+      console.log(`📦 [STORE] Using cached repositories, skipping refresh`);
       return;
     }
     
     try {
+      console.log(`🚀 [STORE] Starting repository refresh...`);
       this._loading.set(true);
       this._error.set(null);
       
-      const repositories = await this.githubService.getAllRepositories().toPromise();
+      const repositories = await new Promise<any[]>((resolve, reject) => {
+        this.githubService.getAllRepositories().subscribe({
+          next: (repos) => {
+            console.log(`📥 [STORE] Received ${repos?.length || 0} repositories from API`);
+            resolve(repos);
+          },
+          error: (error) => {
+            console.error(`❌ [STORE] Error loading repositories:`, error);
+            reject(error);
+          }
+        });
+      });
       
       if (repositories) {
+        console.log(`💾 [STORE] Updating local repository list with ${repositories.length} items`);
         this._repositories.set(repositories);
         this._lastFetch.set(new Date());
+        console.log(`✅ [STORE] Repository list updated successfully`);
       }
     } catch (error) {
+      console.error(`❌ [STORE] Failed to load repositories:`, error);
       this._error.set(error instanceof Error ? error.message : 'Failed to load repositories');
     } finally {
       this._loading.set(false);
+      console.log(`🏁 [STORE] loadRepositories completed`);
     }
   }
   
@@ -296,11 +315,17 @@ export class RepositoryStore {
       });
       
       // 成功した操作に基づいてローカル状態を更新
+      console.log(`🔄 [STORE] Batch operation completed. Successful: ${result.success.length}, Errors: ${result.errors.length}`);
       if (result.success.length > 0) {
+        console.log(`🔄 [STORE] Starting repository list refresh after successful operations...`);
         await this.loadRepositories(true); // 強制リフレッシュ
+        console.log(`✅ [STORE] Repository list refresh completed`);
+      } else {
+        console.log(`⚠️ [STORE] No successful operations, skipping repository refresh`);
       }
       
       // 操作完了後は選択をクリア
+      console.log(`🧹 [STORE] Clearing selection after batch operation`);
       this.clearSelection();
       
       return result;

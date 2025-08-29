@@ -24,16 +24,26 @@ export class GitHubService {
   
   private token: string = '';
   private rateLimitInfo: RateLimit | null = null;
+  private readonly STORAGE_KEY = 'github_repo_cleaner_token';
+  
+  constructor() {
+    // サービス初期化時にlocalStorageからトークンを復元
+    this.loadTokenFromStorage();
+  }
   
   // PAT トークンを設定
   setToken(token: string): void {
     this.token = token;
+    this.saveTokenToStorage(token);
+    console.log(`💾 [SERVICE] Token saved to localStorage`);
   }
   
   // トークンをクリア
   clearToken(): void {
     this.token = '';
     this.rateLimitInfo = null;
+    this.removeTokenFromStorage();
+    console.log(`🗑️ [SERVICE] Token cleared from localStorage`);
   }
   
   // 認証状態チェック
@@ -44,6 +54,42 @@ export class GitHubService {
   // 現在のレート制限情報を取得
   getRateLimit(): RateLimit | null {
     return this.rateLimitInfo;
+  }
+  
+  // トークンを取得
+  getToken(): string {
+    return this.token;
+  }
+  
+  // トークンをlocalStorageに保存
+  private saveTokenToStorage(token: string): void {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, token);
+    } catch (error) {
+      console.warn('Failed to save token to localStorage:', error);
+    }
+  }
+  
+  // トークンをlocalStorageから読み込み
+  private loadTokenFromStorage(): void {
+    try {
+      const storedToken = localStorage.getItem(this.STORAGE_KEY);
+      if (storedToken) {
+        this.token = storedToken;
+        console.log(`🔄 [SERVICE] Token restored from localStorage`);
+      }
+    } catch (error) {
+      console.warn('Failed to load token from localStorage:', error);
+    }
+  }
+  
+  // トークンをlocalStorageから削除
+  private removeTokenFromStorage(): void {
+    try {
+      localStorage.removeItem(this.STORAGE_KEY);
+    } catch (error) {
+      console.warn('Failed to remove token from localStorage:', error);
+    }
   }
   
   /**
