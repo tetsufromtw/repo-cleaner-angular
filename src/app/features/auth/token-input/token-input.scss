@@ -1,0 +1,282 @@
+// Token Input Page - Wispr Style Design
+@use '../../../../styles/mixins' as mix;
+
+.token-input-page {
+  min-height: 100vh;
+  background: var(--bg);
+  
+  .container {
+    @include mix.container();
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
+  }
+}
+
+.token-input-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3xl);
+  align-items: start;
+  
+  @include mix.tablet-up {
+    gap: var(--space-2xl);
+  }
+  
+  @include mix.mobile-only {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+}
+
+// 情報セクション
+.info-section {
+  .info-content {
+    .display {
+      @include mix.font-display();
+      color: var(--fg);
+      margin-bottom: var(--space-md);
+      
+      @include mix.mobile-only {
+        font-size: 2.5rem;
+      }
+    }
+    
+    .subtitle {
+      @include mix.font-body();
+      color: var(--muted);
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: var(--space-2xl);
+    }
+  }
+}
+
+.features-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  
+  .feature-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: var(--space-xs);
+  }
+  
+  h4 {
+    @include mix.font-body(600);
+    color: var(--fg);
+    margin-bottom: var(--space-xs);
+  }
+  
+  p {
+    @include mix.font-body();
+    color: var(--muted);
+    line-height: 1.6;
+  }
+}
+
+// トークン入力セクション
+.token-section {
+  .token-content {
+    h2 {
+      @include mix.font-heading(2);
+      color: var(--fg);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .token-description {
+      @include mix.font-body();
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: var(--space-xl);
+    }
+  }
+}
+
+.input-group {
+  margin-bottom: var(--space-lg);
+  
+  .input-label {
+    @include mix.font-body(500);
+    color: var(--fg);
+    display: block;
+    margin-bottom: var(--space-sm);
+  }
+}
+
+.token-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  
+  .token-input {
+    flex: 1;
+    padding: var(--space-md);
+    padding-right: calc(var(--space-xl) + var(--space-md)); // トグルボタン用スペース
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--fg);
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+    font-size: 0.875rem;
+    transition: all 0.15s ease;
+    
+    @include mix.focus-ring;
+    
+    &:hover:not(:disabled) {
+      border-color: var(--primary);
+    }
+    
+    &::placeholder {
+      color: var(--muted);
+      font-family: inherit;
+    }
+    
+    &:disabled {
+      background: var(--bg-cream);
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+  
+  .toggle-visibility {
+    position: absolute;
+    right: var(--space-sm);
+    padding: var(--space-xs);
+    background: none;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    
+    @include mix.focus-ring;
+    
+    &:hover:not(:disabled) {
+      background: var(--bg-cream);
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .toggle-icon {
+      font-size: 1rem;
+      display: block;
+    }
+  }
+}
+
+.error-message {
+  @include mix.font-body();
+  color: var(--danger);
+  background: rgba(180, 35, 24, 0.1);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-lg);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all 0.2s ease;
+  
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.help-section {
+  margin-bottom: var(--space-xl);
+  
+  h4 {
+    @include mix.font-body(500);
+    color: var(--fg);
+    margin-bottom: var(--space-sm);
+  }
+  
+  .help-steps {
+    @include mix.font-body();
+    color: var(--muted);
+    line-height: 1.6;
+    padding-left: var(--space-lg);
+    
+    li {
+      margin-bottom: var(--space-xs);
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      strong {
+        color: var(--primary);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+.action-section {
+  // フル幅ボタン用セクション
+}
+
+// レスポンシブ対応
+@include mix.mobile-only {
+  .token-input-page {
+    .container {
+      padding-top: var(--space-lg);
+      padding-bottom: var(--space-lg);
+    }
+  }
+  
+  .info-section .info-content .subtitle {
+    font-size: 1rem;
+    margin-bottom: var(--space-lg);
+  }
+  
+  .features-list {
+    gap: var(--space-md);
+  }
+  
+  .feature-item {
+    .feature-icon {
+      font-size: 1.25rem;
+    }
+  }
+  
+  .token-input-wrapper .token-input {
+    padding: var(--space-sm) var(--space-md);
+    padding-right: calc(var(--space-lg) + var(--space-md));
+    font-size: 0.8rem;
+  }
+}
+
+// ハイコントラストモード対応
+@media (prefers-contrast: high) {
+  .token-input-wrapper .token-input {
+    border-width: 2px;
+    
+    &:focus {
+      border-width: 3px;
+    }
+  }
+  
+  .error-message {
+    border-width: 2px;
+    background: rgba(180, 35, 24, 0.2);
+  }
+}
+
+// アクセシビリティ - モーション削減
+@media (prefers-reduced-motion: reduce) {
+  .token-input-wrapper .token-input,
+  .toggle-visibility,
+  .error-message {
+    transition: none;
+  }
+}

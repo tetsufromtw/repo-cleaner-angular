@@ -1,0 +1,124 @@
+<div class="token-input-page">
+  <!-- Header Banner -->
+  <ui-banner variant="announce" [centered]="true">
+    🎯 GitHub Repo Cleaner - Clean up your GitHub repositories in minutes
+  </ui-banner>
+
+  <div class="container">
+    <div class="token-input-layout">
+      <!-- Left: Information Card -->
+      <div class="info-section">
+        <ui-card>
+          <div class="info-content">
+            <h1 class="display">Clean up your GitHub</h1>
+            <p class="subtitle">
+              Batch archive, unarchive, or delete your repositories with ease. 
+              Built with Wispr-style design for the best user experience.
+            </p>
+            
+            <div class="features-list">
+              <div class="feature-item">
+                <div class="feature-icon">🔍</div>
+                <div>
+                  <h4>Smart Filtering</h4>
+                  <p>Filter by stars, language, last activity, and more</p>
+                </div>
+              </div>
+              
+              <div class="feature-item">
+                <div class="feature-icon">⚡</div>
+                <div>
+                  <h4>Batch Operations</h4>
+                  <p>Process multiple repositories at once safely</p>
+                </div>
+              </div>
+              
+              <div class="feature-item">
+                <div class="feature-icon">🔒</div>
+                <div>
+                  <h4>Secure & Private</h4>
+                  <p>Your token stays local, never sent to our servers</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ui-card>
+      </div>
+
+      <!-- Right: Token Input Card -->
+      <div class="token-section">
+        <ui-card>
+          <div class="token-content">
+            <h2>Get Started</h2>
+            <p class="token-description">
+              Enter your GitHub Personal Access Token to begin managing your repositories.
+            </p>
+            
+            <!-- Token Input -->
+            <div class="input-group">
+              <label for="token-input" class="input-label">
+                Personal Access Token
+              </label>
+              
+              <div class="token-input-wrapper">
+                <input
+                  id="token-input"
+                  [type]="showToken() ? 'text' : 'password'"
+                  class="token-input"
+                  placeholder="ghp_xxxxxxxxxxxxxxxxxxxx or github_pat_xxxxx"
+                  [value]="token()"
+                  (input)="onTokenInput($event.target.value)"
+                  [disabled]="isValidating()"
+                  autocomplete="off"
+                  spellcheck="false">
+                
+                <button
+                  type="button"
+                  class="toggle-visibility"
+                  (click)="toggleTokenVisibility()"
+                  [disabled]="isValidating()"
+                  [attr.aria-label]="showToken() ? 'Hide token' : 'Show token'">
+                  <span class="toggle-icon">
+                    {{ showToken() ? '🙈' : '👁️' }}
+                  </span>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Error Message -->
+            <div class="error-message" 
+                 [class.visible]="error()" 
+                 role="alert" 
+                 aria-live="polite">
+              {{ error() }}
+            </div>
+            
+            <!-- Help Text -->
+            <div class="help-section">
+              <h4>How to create a Personal Access Token:</h4>
+              <ol class="help-steps">
+                <li>Go to GitHub → Settings → Developer settings</li>
+                <li>Click "Personal access tokens" → "Tokens (classic)"</li>
+                <li>Generate new token with <strong>repo</strong> permissions</li>
+                <li>Copy and paste the token above</li>
+              </ol>
+            </div>
+            
+            <!-- Action Button -->
+            <div class="action-section">
+              <ui-button
+                variant="primary"
+                size="lg"
+                [loading]="isValidating()"
+                [disabled]="!token() || isValidating()"
+                (clicked)="validateAndStart()"
+                [fullWidth]="true">
+                {{ isValidating() ? 'Validating Token...' : 'Start Cleaning' }}
+              </ui-button>
+            </div>
+          </div>
+        </ui-card>
+      </div>
+    </div>
+  </div>
+</div>
