@@ -1,6 +1,6 @@
 # Repo Cleaner Angular について
 
-この「Repo Cleaner Angular」は、**GitHub リポジトリを一括でアーカイブ・削除できる無料の SPA（シングルページアプリ）**です。
+この「Repo Cleaner Angular」は、**GitHub リポジトリを一括でアーカイブ・削除できる無料の SPA（シングルページアプリ）** です。
 個人の PAT（Personal Access Token）を貼り付けるだけで、不要なリポジトリを効率的に整理できます。
 日本語・英語・繁体字中国語に対応しています。
 
