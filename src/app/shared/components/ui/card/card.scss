@@ -1,0 +1,83 @@
+// UI Card Component - Wispr Style Design System
+@use '../../../../../styles/mixins' as mix;
+
+.ui-card {
+  // 基本設定
+  @include mix.card;
+  
+  display: block;
+  transition: all 0.15s ease;
+  
+  // バリアント
+  &--default {
+    // デフォルトスタイル（既にmixinに含まれる）
+  }
+  
+  &--elevated {
+    box-shadow: var(--shadow-lg);
+    border: none;
+  }
+  
+  &--outlined {
+    border: 2px solid var(--border);
+    box-shadow: none;
+  }
+  
+  // パディングバリアント
+  &--padding-none {
+    padding: 0;
+  }
+  
+  &--padding-sm {
+    padding: var(--space-sm);
+  }
+  
+  &--padding-md {
+    padding: var(--space-md);
+  }
+  
+  &--padding-lg {
+    padding: var(--space-lg);
+  }
+  
+  // クリッカブル状態
+  &--clickable {
+    cursor: pointer;
+    
+    @include mix.focus-ring;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// レスポンシブ調整
+@include mix.mobile-only {
+  .ui-card {
+    &--padding-lg {
+      padding: var(--space-md);
+    }
+  }
+}
+
+// 動きを減らす設定に対応
+@media (prefers-reduced-motion: reduce) {
+  .ui-card {
+    transition: none;
+    
+    &--clickable:hover {
+      transform: none;
+    }
+    
+    &--clickable:active {
+      transform: none;
+    }
+  }
+}

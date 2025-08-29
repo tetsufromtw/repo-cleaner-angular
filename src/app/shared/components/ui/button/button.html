@@ -1,0 +1,23 @@
+<button 
+  [ngClass]="buttonClasses"
+  [type]="type"
+  [disabled]="disabled || loading"
+  (click)="onClick($event)"
+  [attr.aria-busy]="loading"
+  [attr.aria-disabled]="disabled || loading">
+  
+  <!-- Loading spinner -->
+  <span class="ui-button__spinner" *ngIf="loading" aria-hidden="true">
+    <svg class="ui-button__spinner-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 4.75V6.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+      <path d="M17.25 12H18.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+      <path d="M12 17.25V18.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+      <path d="M5.25 12H6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+    </svg>
+  </span>
+  
+  <!-- Button content -->
+  <span class="ui-button__content" [class.ui-button__content--hidden]="loading">
+    <ng-content></ng-content>
+  </span>
+</button>

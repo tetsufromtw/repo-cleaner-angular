@@ -1,0 +1,176 @@
+// UI Modal Component - Wispr Style Design System
+@use '../../../../../styles/mixins' as mix;
+
+.ui-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-md);
+  
+  // 初期状態は非表示
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.15s ease;
+  
+  // オープン状態
+  &--open {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  // ダイアログ本体
+  &__dialog {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-height: calc(100vh - 2 * var(--space-md));
+    overflow-y: auto;
+    transform: scale(0.95);
+    transition: transform 0.15s ease;
+    
+    .ui-modal--open & {
+      transform: scale(1);
+    }
+  }
+  
+  // サイズバリアント
+  &--sm &__dialog {
+    max-width: 400px;
+  }
+  
+  &--md &__dialog {
+    max-width: 600px;
+  }
+  
+  &--lg &__dialog {
+    max-width: 800px;
+  }
+  
+  &--xl &__dialog {
+    max-width: 1200px;
+  }
+  
+  // ヘッダー
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg) var(--space-lg) 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-lg);
+  }
+  
+  &__title {
+    @include mix.font-heading(2);
+    margin: 0;
+    color: var(--fg);
+  }
+  
+  &__close {
+    @include mix.button-reset;
+    @include mix.focus-ring;
+    
+    padding: var(--space-sm);
+    border-radius: var(--radius);
+    color: var(--muted);
+    transition: all 0.15s ease;
+    
+    &:hover {
+      color: var(--fg);
+      background: var(--bg-cream);
+    }
+    
+    &-icon {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  
+  // コンテンツ
+  &__content {
+    padding: 0 var(--space-lg) var(--space-lg);
+    color: var(--fg);
+    
+    @include mix.font-body();
+  }
+  
+  // フッター（将来の拡張用）
+  &__footer {
+    padding: var(--space-lg);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: var(--space-md);
+    justify-content: flex-end;
+  }
+}
+
+// レスポンシブ調整
+@include mix.mobile-only {
+  .ui-modal {
+    padding: var(--space-sm);
+    align-items: flex-start;
+    
+    &__dialog {
+      margin-top: var(--space-lg);
+      max-height: calc(100vh - 3 * var(--space-lg));
+    }
+    
+    &__header,
+    &__content,
+    &__footer {
+      padding-left: var(--space-md);
+      padding-right: var(--space-md);
+    }
+    
+    &__title {
+      @include mix.font-heading(3);
+    }
+  }
+}
+
+// 動きを減らす設定に対応
+@media (prefers-reduced-motion: reduce) {
+  .ui-modal {
+    transition: none;
+    
+    &__dialog {
+      transition: none;
+      transform: none;
+      
+      .ui-modal--open & {
+        transform: none;
+      }
+    }
+    
+    &__close {
+      transition: none;
+    }
+  }
+}
+
+// ハイコントラストモード対応
+@media (prefers-contrast: high) {
+  .ui-modal {
+    background: rgba(0, 0, 0, 0.8);
+    
+    &__dialog {
+      border: 2px solid var(--fg);
+    }
+    
+    &__header {
+      border-bottom-width: 2px;
+    }
+    
+    &__footer {
+      border-top-width: 2px;
+    }
+  }
+}

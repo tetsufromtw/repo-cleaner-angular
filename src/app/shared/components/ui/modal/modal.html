@@ -1,0 +1,38 @@
+<div 
+  [ngClass]="modalClasses"
+  (click)="onBackdropClick($event)"
+  [attr.aria-hidden]="!isOpen"
+  role="dialog"
+  [attr.aria-labelledby]="title ? 'modal-title' : null"
+  aria-modal="true">
+  
+  <div class="ui-modal__dialog" #modal>
+    <!-- Header -->
+    <div class="ui-modal__header" *ngIf="title || closable">
+      <h2 id="modal-title" class="ui-modal__title" *ngIf="title">{{ title }}</h2>
+      
+      <button 
+        #closeButton
+        class="ui-modal__close"
+        type="button"
+        *ngIf="closable"
+        (click)="close()"
+        aria-label="閉じる">
+        <svg class="ui-modal__close-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Content -->
+    <div class="ui-modal__content">
+      <ng-content></ng-content>
+    </div>
+    
+    <!-- Footer (if provided via content projection) -->
+    <div class="ui-modal__footer" *ngIf="false">
+      <ng-content select="[slot=footer]"></ng-content>
+    </div>
+  </div>
+</div>
