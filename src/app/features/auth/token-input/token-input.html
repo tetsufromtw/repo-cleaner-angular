@@ -1,7 +1,7 @@
 <div class="token-input-page">
   <!-- Header Banner -->
   <ui-banner variant="announce" [centered]="true">
-    🎯 GitHub Repo Cleaner - Clean up your GitHub repositories in minutes
+    <mat-icon>gps_fixed</mat-icon> GitHub Repo Cleaner - Clean up your GitHub repositories in minutes
   </ui-banner>
 
   <div class="container">
@@ -18,7 +18,7 @@
             
             <div class="features-list">
               <div class="feature-item">
-                <div class="feature-icon">🔍</div>
+                <div class="feature-icon"><mat-icon>search</mat-icon></div>
                 <div>
                   <h4>Smart Filtering</h4>
                   <p>Filter by stars, language, last activity, and more</p>
@@ -26,7 +26,7 @@
               </div>
               
               <div class="feature-item">
-                <div class="feature-icon">⚡</div>
+                <div class="feature-icon"><mat-icon>bolt</mat-icon></div>
                 <div>
                   <h4>Batch Operations</h4>
                   <p>Process multiple repositories at once safely</p>
@@ -34,7 +34,7 @@
               </div>
               
               <div class="feature-item">
-                <div class="feature-icon">🔒</div>
+                <div class="feature-icon"><mat-icon>lock</mat-icon></div>
                 <div>
                   <h4>Secure & Private</h4>
                   <p>Your token stays local, never sent to our servers</p>
@@ -78,9 +78,9 @@
                   (click)="toggleTokenVisibility()"
                   [disabled]="isValidating()"
                   [attr.aria-label]="showToken() ? 'Hide token' : 'Show token'">
-                  <span class="toggle-icon">
-                    {{ showToken() ? '🙈' : '👁️' }}
-                  </span>
+                  <mat-icon class="toggle-icon">
+                    {{ showToken() ? 'visibility_off' : 'visibility' }}
+                  </mat-icon>
                 </button>
               </div>
             </div>

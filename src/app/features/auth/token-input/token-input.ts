@@ -2,6 +2,7 @@ import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 import { GitHubService } from '../../../data-access';
 import { UiButtonComponent, UiCardComponent, UiBannerComponent } from '../../../shared/components/ui';
@@ -12,6 +13,7 @@ import { UiButtonComponent, UiCardComponent, UiBannerComponent } from '../../../
   imports: [
     CommonModule, 
     FormsModule,
+    MatIconModule,
     UiButtonComponent,
     UiCardComponent,
     UiBannerComponent
