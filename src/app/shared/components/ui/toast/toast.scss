@@ -1,0 +1,172 @@
+// UI Toast Component - Wispr Style Design System
+@use '../../../../../styles/mixins' as mix;
+
+.ui-toast {
+  @include mix.card(var(--space-md));
+  
+  position: relative;
+  min-width: 300px;
+  max-width: 500px;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.15s ease;
+  overflow: hidden;
+  
+  // 表示状態
+  &--visible {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  
+  // バリアント
+  &--info {
+    border-left: 4px solid var(--primary);
+    
+    .ui-toast__icon {
+      color: var(--primary);
+    }
+  }
+  
+  &--success {
+    border-left: 4px solid var(--success);
+    
+    .ui-toast__icon {
+      color: var(--success);
+    }
+  }
+  
+  &--warning {
+    border-left: 4px solid var(--warning);
+    
+    .ui-toast__icon {
+      color: var(--warning);
+    }
+  }
+  
+  &--error {
+    border-left: 4px solid var(--danger);
+    
+    .ui-toast__icon {
+      color: var(--danger);
+    }
+  }
+  
+  // コンテンツ
+  &__content {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+  
+  &__icon {
+    flex-shrink: 0;
+    padding-top: 2px; // テキストベースラインと合わせる
+    
+    &-svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  
+  &__message {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  &__title {
+    @include mix.font-body(600);
+    color: var(--fg);
+    margin-bottom: var(--space-xs);
+  }
+  
+  &__text {
+    @include mix.font-body();
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  
+  &__close {
+    @include mix.button-reset;
+    @include mix.focus-ring;
+    
+    flex-shrink: 0;
+    padding: var(--space-xs);
+    border-radius: var(--radius);
+    color: var(--muted);
+    transition: all 0.15s ease;
+    
+    &:hover {
+      color: var(--fg);
+      background: var(--bg-cream);
+    }
+    
+    &-icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  
+  // プログレスバー
+  &__progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+  
+  &__progress-bar {
+    height: 100%;
+    width: 100%;
+    background: currentColor;
+    opacity: 0.6;
+    transform-origin: left;
+    animation: ui-toast-progress linear forwards;
+  }
+}
+
+// プログレスバーアニメーション
+@keyframes ui-toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+// レスポンシブ調整
+@include mix.mobile-only {
+  .ui-toast {
+    min-width: 280px;
+    max-width: calc(100vw - 2 * var(--space-md));
+  }
+}
+
+// ハイコントラストモード対応
+@media (prefers-contrast: high) {
+  .ui-toast {
+    border-width: 2px;
+    
+    &--info { border-left-width: 6px; }
+    &--success { border-left-width: 6px; }
+    &--warning { border-left-width: 6px; }
+    &--error { border-left-width: 6px; }
+  }
+}
+
+// 動きを減らす設定に対応
+@media (prefers-reduced-motion: reduce) {
+  .ui-toast {
+    transition: none;
+    
+    &__close {
+      transition: none;
+    }
+    
+    &__progress-bar {
+      animation: none;
+    }
+  }
+}

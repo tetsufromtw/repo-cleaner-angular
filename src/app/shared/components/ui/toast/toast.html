@@ -1,0 +1,44 @@
+<div 
+  [ngClass]="toastClasses"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
+  role="alert"
+  [attr.aria-live]="variant === 'error' ? 'assertive' : 'polite'">
+  
+  <div class="ui-toast__content">
+    <!-- アイコン -->
+    <div class="ui-toast__icon">
+      <svg class="ui-toast__icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="variantIcon"/>
+      </svg>
+    </div>
+    
+    <!-- メッセージ -->
+    <div class="ui-toast__message">
+      <div class="ui-toast__title" *ngIf="title">{{ title }}</div>
+      <div class="ui-toast__text">
+        <ng-content></ng-content>
+      </div>
+    </div>
+    
+    <!-- クローズボタン -->
+    <button 
+      class="ui-toast__close"
+      type="button"
+      *ngIf="closable"
+      (click)="close()"
+      aria-label="通知を閉じる">
+      <svg class="ui-toast__close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  
+  <!-- プログレスバー（オートクローズ時） -->
+  <div class="ui-toast__progress" *ngIf="duration > 0 && isVisible">
+    <div 
+      class="ui-toast__progress-bar" 
+      [style.animation-duration.ms]="duration">
+    </div>
+  </div>
+</div>

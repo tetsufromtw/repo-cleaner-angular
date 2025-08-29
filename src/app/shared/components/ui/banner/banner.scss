@@ -1,0 +1,146 @@
+// UI Banner Component - Wispr Style Design System
+@use '../../../../../styles/mixins' as mix;
+
+.ui-banner {
+  @include mix.font-body();
+  
+  width: 100%;
+  padding: var(--space-md);
+  
+  // バリアント
+  &--announce {
+    @include mix.surface-cream;
+    background: var(--announce-bg);
+    color: var(--announce-fg);
+  }
+  
+  &--info {
+    background: rgba(159, 136, 200, 0.1); // primary with opacity
+    color: var(--fg);
+    border: 1px solid var(--primary);
+  }
+  
+  &--success {
+    background: rgba(31, 138, 112, 0.1);
+    color: var(--fg);
+    border: 1px solid var(--success);
+  }
+  
+  &--warning {
+    background: rgba(183, 121, 31, 0.1);
+    color: var(--fg);
+    border: 1px solid var(--warning);
+  }
+  
+  &--danger {
+    background: rgba(180, 35, 24, 0.1);
+    color: var(--fg);
+    border: 1px solid var(--danger);
+  }
+  
+  // センタリング
+  &--centered {
+    text-align: center;
+    
+    .ui-banner__content {
+      justify-content: center;
+    }
+  }
+  
+  // コンテンツ
+  &__content {
+    @include mix.container();
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+  }
+  
+  &__message {
+    flex: 1;
+    min-width: 0;
+    
+    // バナー内のリンク
+    a {
+      color: inherit;
+      text-decoration: underline;
+      font-weight: 500;
+      
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+  
+  &__close {
+    @include mix.button-reset;
+    @include mix.focus-ring;
+    
+    flex-shrink: 0;
+    padding: var(--space-xs);
+    border-radius: var(--radius);
+    color: inherit;
+    opacity: 0.8;
+    transition: all 0.15s ease;
+    
+    &:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    &-icon {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+// レスポンシブ調整
+@include mix.mobile-only {
+  .ui-banner {
+    padding: var(--space-sm) var(--space-md);
+    
+    &__content {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      flex-direction: column;
+      
+      .ui-banner--centered & {
+        align-items: center;
+      }
+    }
+    
+    &__close {
+      align-self: flex-end;
+      
+      .ui-banner--centered & {
+        align-self: center;
+      }
+    }
+  }
+}
+
+// ハイコントラストモード対応
+@media (prefers-contrast: high) {
+  .ui-banner {
+    &--info,
+    &--success,
+    &--warning,
+    &--danger {
+      border-width: 2px;
+    }
+    
+    &--announce {
+      border: 2px solid var(--announce-fg);
+    }
+  }
+}
+
+// 動きを減らす設定に対応
+@media (prefers-reduced-motion: reduce) {
+  .ui-banner__close {
+    transition: none;
+  }
+}

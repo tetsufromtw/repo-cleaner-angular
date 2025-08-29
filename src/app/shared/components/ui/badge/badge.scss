@@ -1,0 +1,124 @@
+// UI Badge Component - Wispr Style Design System
+@use '../../../../../styles/mixins' as mix;
+
+.ui-badge {
+  @include mix.font-caption(500);
+  
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  
+  // バリアント
+  &--default {
+    background: var(--bg-cream);
+    color: var(--fg);
+    border-color: var(--border);
+  }
+  
+  &--primary {
+    background: var(--primary);
+    color: var(--primary-ink);
+  }
+  
+  &--secondary {
+    background: var(--accent);
+    color: var(--fg);
+  }
+  
+  &--success {
+    background: var(--success);
+    color: white;
+  }
+  
+  &--warning {
+    background: var(--warning);
+    color: white;
+  }
+  
+  &--danger {
+    background: var(--danger);
+    color: white;
+  }
+  
+  // アウトライン版
+  &--outlined {
+    background: transparent;
+    
+    &.ui-badge--default {
+      color: var(--fg);
+      border-color: var(--border);
+    }
+    
+    &.ui-badge--primary {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    
+    &.ui-badge--secondary {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    
+    &.ui-badge--success {
+      color: var(--success);
+      border-color: var(--success);
+    }
+    
+    &.ui-badge--warning {
+      color: var(--warning);
+      border-color: var(--warning);
+    }
+    
+    &.ui-badge--danger {
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+  }
+  
+  // サイズバリアント
+  &--sm {
+    padding: 2px var(--space-xs);
+    font-size: 0.75rem;
+    min-height: 20px;
+  }
+  
+  &--md {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-caption);
+    min-height: 24px;
+  }
+  
+  &--lg {
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-body);
+    min-height: 32px;
+  }
+  
+  // 丸い形状
+  &--rounded {
+    border-radius: 999px;
+  }
+}
+
+// ハイコントラストモード対応
+@media (prefers-contrast: high) {
+  .ui-badge {
+    border-width: 2px;
+    font-weight: 600;
+    
+    &--outlined {
+      border-width: 2px;
+    }
+  }
+}
+
+// 動きを減らす設定に対応
+@media (prefers-reduced-motion: reduce) {
+  .ui-badge {
+    transition: none;
+  }
+}
