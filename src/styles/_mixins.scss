@@ -1,0 +1,251 @@
+// Sass Mixins - 共通的なスタイルパターン
+
+// フォント関連
+@mixin font-display($weight: 700) {
+  font-family: 'EB Garamond', serif;
+  font-size: var(--font-size-display);
+  font-weight: $weight;
+  line-height: var(--line-height-heading);
+  letter-spacing: -0.025em;
+}
+
+@mixin font-heading($level: 1) {
+  font-family: 'EB Garamond', serif;
+  font-weight: if($level == 1, 700, 600);
+  line-height: var(--line-height-heading);
+  letter-spacing: -0.015em;
+  
+  @if $level == 1 {
+    font-size: var(--font-size-h1);
+  } @else if $level == 2 {
+    font-size: var(--font-size-h2);
+  } @else {
+    font-size: var(--font-size-h3);
+  }
+}
+
+@mixin font-body($weight: 400) {
+  font-family: 'Figtree', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+  font-size: var(--font-size-body);
+  font-weight: $weight;
+  line-height: var(--line-height-body);
+  letter-spacing: 0.005em;
+}
+
+@mixin font-caption($weight: 400) {
+  font-family: 'Figtree', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+  font-size: var(--font-size-caption);
+  font-weight: $weight;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+// 日本語フォント切り替え
+@mixin font-ja-display($weight: 700) {
+  font-family: 'Noto Serif JP', serif;
+  font-size: var(--font-size-display);
+  font-weight: $weight;
+  line-height: var(--line-height-heading);
+}
+
+@mixin font-ja-heading($level: 1) {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: if($level == 1, 700, 600);
+  line-height: var(--line-height-heading);
+  
+  @if $level == 1 {
+    font-size: var(--font-size-h1);
+  } @else if $level == 2 {
+    font-size: var(--font-size-h2);
+  } @else {
+    font-size: var(--font-size-h3);
+  }
+}
+
+@mixin font-ja-body($weight: 400) {
+  font-family: 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--font-size-body);
+  font-weight: $weight;
+  line-height: var(--line-height-body);
+}
+
+// レイアウト
+@mixin container($max-width: 1200px) {
+  width: 100%;
+  max-width: $max-width;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+  
+  @media (min-width: 768px) {
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+  }
+}
+
+@mixin card($padding: var(--space-lg)) {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: $padding;
+  box-shadow: var(--shadow-sm);
+}
+
+@mixin surface-cream {
+  background: var(--bg-cream);
+  border: 1px solid var(--border);
+}
+
+// インタラクション
+@mixin focus-ring {
+  &:focus {
+    outline: none;
+    box-shadow: var(--ring);
+  }
+  
+  &:focus:not(:focus-visible) {
+    box-shadow: none;
+  }
+  
+  &:focus-visible {
+    box-shadow: var(--ring);
+  }
+}
+
+@mixin button-reset {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+// ボタンバリアント
+@mixin button-primary {
+  @include button-reset;
+  @include focus-ring;
+  
+  background: var(--primary);
+  color: var(--primary-ink);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  padding: var(--space-sm) var(--space-lg);
+  font-weight: 500;
+  transition: all 0.15s ease;
+  
+  &:hover:not(:disabled) {
+    filter: brightness(0.95);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-secondary {
+  @include button-reset;
+  @include focus-ring;
+  
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-sm) var(--space-lg);
+  font-weight: 500;
+  transition: all 0.15s ease;
+  
+  &:hover:not(:disabled) {
+    background: var(--bg-cream);
+    border-color: var(--primary);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-danger {
+  @include button-reset;
+  @include focus-ring;
+  
+  background: var(--danger);
+  color: white;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  padding: var(--space-sm) var(--space-lg);
+  font-weight: 500;
+  transition: all 0.15s ease;
+  
+  &:hover:not(:disabled) {
+    filter: brightness(0.9);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// ユーティリティ
+@mixin visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+@mixin clearfix {
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+// レスポンシブ
+@mixin mobile-only {
+  @media (max-width: 767px) {
+    @content;
+  }
+}
+
+@mixin tablet-up {
+  @media (min-width: 768px) {
+    @content;
+  }
+}
+
+@mixin desktop-up {
+  @media (min-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin large-up {
+  @media (min-width: 1200px) {
+    @content;
+  }
+}

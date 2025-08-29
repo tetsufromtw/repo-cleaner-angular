@@ -1,0 +1,317 @@
+// 基本スタイルとリセット
+@import 'tokens';
+@import 'mixins';
+
+// Modern CSS Reset
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px; // 1rem = 16px
+  scroll-behavior: smooth;
+}
+
+body {
+  @include font-body();
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+// 日本語環境での自動フォント切り替え
+:lang(ja) {
+  .display { @include font-ja-display(); }
+  h1 { @include font-ja-heading(1); }
+  h2 { @include font-ja-heading(2); }
+  h3 { @include font-ja-heading(3); }
+  body, p, span, div { @include font-ja-body(); }
+}
+
+// 見出し
+.display {
+  @include font-display();
+}
+
+h1 {
+  @include font-heading(1);
+}
+
+h2 {
+  @include font-heading(2);
+}
+
+h3 {
+  @include font-heading(3);
+}
+
+h4, h5, h6 {
+  @include font-body(600);
+  font-size: var(--font-size-body);
+}
+
+// テキスト
+p {
+  margin-bottom: var(--space-md);
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+small {
+  @include font-caption();
+}
+
+// リンク
+a {
+  color: var(--primary);
+  text-decoration: none;
+  border-radius: 2px;
+  transition: all 0.15s ease;
+  
+  @include focus-ring;
+  
+  &:hover {
+    color: var(--primary);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+  }
+}
+
+// リスト
+ul, ol {
+  padding-left: var(--space-lg);
+  margin-bottom: var(--space-md);
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+li {
+  margin-bottom: var(--space-xs);
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// 画像
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+// フォーム要素
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+input,
+textarea,
+select {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface);
+  color: var(--fg);
+  transition: all 0.15s ease;
+  
+  @include focus-ring;
+  
+  &:hover:not(:disabled) {
+    border-color: var(--primary);
+  }
+  
+  &::placeholder {
+    color: var(--muted);
+  }
+  
+  &:disabled {
+    background: var(--bg-cream);
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+// ボタン
+button {
+  @include focus-ring;
+}
+
+// テーブル
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-bottom: var(--space-md);
+}
+
+th,
+td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  font-weight: 600;
+  background: var(--bg-cream);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+tr:hover {
+  background: rgba(159, 136, 200, 0.05);
+}
+
+// コード
+pre,
+code {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  border-radius: 4px;
+}
+
+code {
+  padding: 2px 4px;
+  background: var(--bg-cream);
+  font-size: 0.875em;
+}
+
+pre {
+  padding: var(--space-md);
+  background: var(--bg-cream);
+  overflow-x: auto;
+  
+  code {
+    padding: 0;
+    background: none;
+  }
+}
+
+// 水平線
+hr {
+  border: none;
+  height: 1px;
+  background: var(--border);
+  margin: var(--space-xl) 0;
+}
+
+// ユーティリティクラス
+.container {
+  @include container();
+}
+
+.card {
+  @include card();
+}
+
+.surface-cream {
+  @include surface-cream;
+}
+
+.visually-hidden {
+  @include visually-hidden;
+}
+
+// テキストユーティリティ
+.text-muted {
+  color: var(--muted);
+}
+
+.text-success {
+  color: var(--success);
+}
+
+.text-warning {
+  color: var(--warning);
+}
+
+.text-danger {
+  color: var(--danger);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+// 背景ユーティリティ
+.bg-cream {
+  background: var(--bg-cream);
+}
+
+.bg-announce {
+  background: var(--announce-bg);
+  color: var(--announce-fg);
+}
+
+// 間隔ユーティリティ
+.m-0 { margin: 0; }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.ml-0 { margin-left: 0; }
+.mr-0 { margin-right: 0; }
+
+.m-sm { margin: var(--space-sm); }
+.mt-sm { margin-top: var(--space-sm); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.ml-sm { margin-left: var(--space-sm); }
+.mr-sm { margin-right: var(--space-sm); }
+
+.m-md { margin: var(--space-md); }
+.mt-md { margin-top: var(--space-md); }
+.mb-md { margin-bottom: var(--space-md); }
+.ml-md { margin-left: var(--space-md); }
+.mr-md { margin-right: var(--space-md); }
+
+.m-lg { margin: var(--space-lg); }
+.mt-lg { margin-top: var(--space-lg); }
+.mb-lg { margin-bottom: var(--space-lg); }
+.ml-lg { margin-left: var(--space-lg); }
+.mr-lg { margin-right: var(--space-lg); }
+
+.p-0 { padding: 0; }
+.pt-0 { padding-top: 0; }
+.pb-0 { padding-bottom: 0; }
+.pl-0 { padding-left: 0; }
+.pr-0 { padding-right: 0; }
+
+.p-sm { padding: var(--space-sm); }
+.pt-sm { padding-top: var(--space-sm); }
+.pb-sm { padding-bottom: var(--space-sm); }
+.pl-sm { padding-left: var(--space-sm); }
+.pr-sm { padding-right: var(--space-sm); }
+
+.p-md { padding: var(--space-md); }
+.pt-md { padding-top: var(--space-md); }
+.pb-md { padding-bottom: var(--space-md); }
+.pl-md { padding-left: var(--space-md); }
+.pr-md { padding-right: var(--space-md); }
+
+.p-lg { padding: var(--space-lg); }
+.pt-lg { padding-top: var(--space-lg); }
+.pb-lg { padding-bottom: var(--space-lg); }
+.pl-lg { padding-left: var(--space-lg); }
+.pr-lg { padding-right: var(--space-lg); }
