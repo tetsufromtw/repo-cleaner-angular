@@ -1,6 +1,6 @@
 // 基本スタイルとリセット
-@import 'tokens';
-@import 'mixins';
+@use 'tokens';
+@use 'mixins' as mix;
 
 // Modern CSS Reset
 *,
@@ -20,7 +20,7 @@ html {
 }
 
 body {
-  @include font-body();
+  @include mix.font-body();
   background: var(--bg);
   color: var(--fg);
   min-height: 100vh;
@@ -32,32 +32,32 @@ body {
 
 // 日本語環境での自動フォント切り替え
 :lang(ja) {
-  .display { @include font-ja-display(); }
-  h1 { @include font-ja-heading(1); }
-  h2 { @include font-ja-heading(2); }
-  h3 { @include font-ja-heading(3); }
-  body, p, span, div { @include font-ja-body(); }
+  .display { @include mix.font-ja-display(); }
+  h1 { @include mix.font-ja-heading(1); }
+  h2 { @include mix.font-ja-heading(2); }
+  h3 { @include mix.font-ja-heading(3); }
+  body, p, span, div { @include mix.font-ja-body(); }
 }
 
 // 見出し
 .display {
-  @include font-display();
+  @include mix.font-display();
 }
 
 h1 {
-  @include font-heading(1);
+  @include mix.font-heading(1);
 }
 
 h2 {
-  @include font-heading(2);
+  @include mix.font-heading(2);
 }
 
 h3 {
-  @include font-heading(3);
+  @include mix.font-heading(3);
 }
 
 h4, h5, h6 {
-  @include font-body(600);
+  @include mix.font-body(600);
   font-size: var(--font-size-body);
 }
 
@@ -71,7 +71,7 @@ p {
 }
 
 small {
-  @include font-caption();
+  @include mix.font-caption();
 }
 
 // リンク
@@ -81,7 +81,7 @@ a {
   border-radius: 2px;
   transition: all 0.15s ease;
   
-  @include focus-ring;
+  @include mix.focus-ring;
   
   &:hover {
     color: var(--primary);
@@ -134,7 +134,7 @@ select {
   color: var(--fg);
   transition: all 0.15s ease;
   
-  @include focus-ring;
+  @include mix.focus-ring;
   
   &:hover:not(:disabled) {
     border-color: var(--primary);
@@ -153,7 +153,7 @@ select {
 
 // ボタン
 button {
-  @include focus-ring;
+  @include mix.focus-ring;
 }
 
 // テーブル
@@ -217,19 +217,19 @@ hr {
 
 // ユーティリティクラス
 .container {
-  @include container();
+  @include mix.container();
 }
 
 .card {
-  @include card();
+  @include mix.card();
 }
 
 .surface-cream {
-  @include surface-cream;
+  @include mix.surface-cream;
 }
 
 .visually-hidden {
-  @include visually-hidden;
+  @include mix.visually-hidden;
 }
 
 // テキストユーティリティ

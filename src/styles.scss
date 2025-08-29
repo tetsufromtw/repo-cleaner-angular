@@ -1,8 +1,8 @@
 /* GitHub Repo Cleaner - Wispr Style Design System */
 
-// Google Fonts import
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Figtree:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
-
 // 基本スタイルシステム
-@import 'styles/base';
+@use 'styles/base';
+
+// Google Fonts import - 必要なweightのみ読み込み
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@600;700&family=Figtree:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
