@@ -1,60 +1,56 @@
-# RepoCleanerAngular
+# Repo Cleaner Angular について
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.0.2.
+この「Repo Cleaner Angular」は、**GitHub リポジトリを一括でアーカイブ・削除できる無料の SPA（シングルページアプリ）**です。
+個人の PAT（Personal Access Token）を貼り付けるだけで、不要なリポジトリを効率的に整理できます。
+日本語・英語・繁体字中国語に対応しています。
 
-## Development server
+### 主な機能
 
-To start a local development server, run:
+- PAT 認証による安全なリポジトリ操作（トークンはローカルのみで使用）
+- リポジトリ一覧の高速表示・フィルタ・並び替え・多選択
+- 一括アーカイブ・削除・復元
+- 危険操作時の二重確認ダイアログ
+- バッチ処理の進捗表示と CSV エクスポート
+- アクセシビリティ・キーボード操作対応
 
-```bash
-ng serve
-```
+---
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## インストールと起動方法
 
-## Code scaffolding
+1. リポジトリをクローン
+   ```bash
+   git clone https://github.com/tetsufromtw/repo-cleaner-angular.git
+   cd repo-cleaner-angular
+   ```
+2. 依存パッケージをインストール
+   ```bash
+   npm install
+   ```
+3. 開発サーバーを起動
+   ```bash
+   npm start
+   ```
+   または
+   ```bash
+   ng serve
+   ```
+4. ブラウザでアクセス
+   http://localhost:4200/
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+---
 
-```bash
-ng generate component component-name
-```
+## 使い方
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+1. トップ画面で「Personal Access Token（PAT）」を貼り付けて認証します。
+2. リポジトリ一覧が表示されるので、フィルタや並び替えで不要なリポジトリを選択します。
+3. 「アーカイブ」「削除」などの操作を選びます。削除時は二重確認が表示されます。
+4. バッチ処理の進捗を確認し、結果を CSV でダウンロードできます。
 
-```bash
-ng generate --help
-```
+---
 
-## Building
+## 注意事項
 
-To build the project run:
+- PAT はローカルのみで使用され、外部に送信されません。
+- GitHub の API レート制限や権限不足の場合は、画面上で案内が表示されます。
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-# repo-cleaner-angular
+---

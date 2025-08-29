@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, timer, of } from 'rxjs';
-import { map, catchError, retry, mergeMap, delay } from 'rxjs/operators';
+import { map, catchError, retry, mergeMap, delay, tap } from 'rxjs/operators';
 
 import {
   GitHubRepository,
@@ -24,16 +24,26 @@ export class GitHubService {
   
   private token: string = '';
   private rateLimitInfo: RateLimit | null = null;
+  private readonly STORAGE_KEY = 'github_repo_cleaner_token';
+  
+  constructor() {
+    // サービス初期化時にlocalStorageからトークンを復元
+    this.loadTokenFromStorage();
+  }
   
   // PAT トークンを設定
   setToken(token: string): void {
     this.token = token;
+    this.saveTokenToStorage(token);
+    console.log(`💾 [SERVICE] Token saved to localStorage`);
   }
   
   // トークンをクリア
   clearToken(): void {
     this.token = '';
     this.rateLimitInfo = null;
+    this.removeTokenFromStorage();
+    console.log(`🗑️ [SERVICE] Token cleared from localStorage`);
   }
   
   // 認証状態チェック
@@ -44,6 +54,42 @@ export class GitHubService {
   // 現在のレート制限情報を取得
   getRateLimit(): RateLimit | null {
     return this.rateLimitInfo;
+  }
+  
+  // トークンを取得
+  getToken(): string {
+    return this.token;
+  }
+  
+  // トークンをlocalStorageに保存
+  private saveTokenToStorage(token: string): void {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, token);
+    } catch (error) {
+      console.warn('Failed to save token to localStorage:', error);
+    }
+  }
+  
+  // トークンをlocalStorageから読み込み
+  private loadTokenFromStorage(): void {
+    try {
+      const storedToken = localStorage.getItem(this.STORAGE_KEY);
+      if (storedToken) {
+        this.token = storedToken;
+        console.log(`🔄 [SERVICE] Token restored from localStorage`);
+      }
+    } catch (error) {
+      console.warn('Failed to load token from localStorage:', error);
+    }
+  }
+  
+  // トークンをlocalStorageから削除
+  private removeTokenFromStorage(): void {
+    try {
+      localStorage.removeItem(this.STORAGE_KEY);
+    } catch (error) {
+      console.warn('Failed to remove token from localStorage:', error);
+    }
   }
   
   /**
@@ -120,9 +166,26 @@ export class GitHubService {
   deleteRepository(owner: string, repo: string): Observable<void> {
     const url = `/repos/${owner}/${repo}`;
     
+    console.log(`🗑️ [DELETE] Attempting to delete repository: ${owner}/${repo}`);
+    console.log(`🗑️ [DELETE] Full URL: ${this.baseURL}${url}`);
+    console.log(`🗑️ [DELETE] Token exists: ${Boolean(this.token)}`);
+    console.log(`🗑️ [DELETE] Token starts with: ${this.token.substring(0, 10)}...`);
+    
     return this.makeRequest<void>(url, {
       method: 'DELETE'
-    });
+    }).pipe(
+      tap({
+        next: (result) => {
+          console.log(`✅ [DELETE] Successfully deleted repository: ${owner}/${repo}`, result);
+        },
+        error: (error) => {
+          console.error(`❌ [DELETE] Failed to delete repository: ${owner}/${repo}`, error);
+          console.error(`❌ [DELETE] Error status: ${error?.status}`);
+          console.error(`❌ [DELETE] Error message: ${error?.message}`);
+          console.error(`❌ [DELETE] Full error:`, error);
+        }
+      })
+    );
   }
   
   /**
@@ -135,13 +198,10 @@ export class GitHubService {
   ): Observable<BatchOperationResult> {
     const results: BatchOperationResult = {
       success: [],
-      failed: [],
-      summary: {
-        total: repositories.length,
-        successful: 0,
-        failed: 0,
-        skipped: 0
-      }
+      errors: [],
+      total: repositories.length,
+      completed: 0,
+      remaining: repositories.length
     };
     
     // 同時実行数を制限したパラレル処理
@@ -159,15 +219,15 @@ export class GitHubService {
             next: (result) => {
               if (result) {
                 results.success.push(result);
-                results.summary.successful++;
               }
               completed++;
               running--;
+              results.completed++;
+              results.remaining--;
               
               // 進捗を通知
               observer.next({
-                ...results,
-                summary: { ...results.summary }
+                ...results
               });
               
               if (completed === repositories.length) {
@@ -177,18 +237,18 @@ export class GitHubService {
               }
             },
             error: (error) => {
-              results.failed.push({
+              results.errors.push({
                 repository: repo,
                 error: error.message || 'Unknown error'
               });
-              results.summary.failed++;
               completed++;
               running--;
+              results.completed++;
+              results.remaining--;
               
               // 進捗を通知
               observer.next({
-                ...results,
-                summary: { ...results.summary }
+                ...results
               });
               
               if (completed === repositories.length) {
@@ -226,7 +286,7 @@ export class GitHubService {
       }
     }
     
-    switch (operation) {
+    switch (operation.type) {
       case 'archive':
         return repo.archived ? of(null) : this.archiveRepository(owner, name);
       case 'unarchive':
@@ -234,7 +294,7 @@ export class GitHubService {
       case 'delete':
         return this.deleteRepository(owner, name).pipe(map(() => repo));
       default:
-        return throwError(() => new Error(`Unknown operation: ${operation}`));
+        return throwError(() => new Error(`Unknown operation: ${operation.type}`));
     }
   }
   

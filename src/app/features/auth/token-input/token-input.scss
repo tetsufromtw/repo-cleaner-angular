@@ -240,6 +240,22 @@
       }
     }
   }
+  
+  .permissions-list {
+    margin: var(--space-sm) 0;
+    padding-left: var(--space-lg);
+    
+    li {
+      margin-bottom: var(--space-xs);
+      @include mix.font-body(500);
+      
+      .required {
+        color: var(--danger);
+        font-weight: 600;
+      }
+    }
+  }
+  
 }
 
 .action-section {

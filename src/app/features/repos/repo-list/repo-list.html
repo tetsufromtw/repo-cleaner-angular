@@ -1,0 +1,329 @@
+<div class="repo-list-page">
+  <div class="container">
+    <!-- Header -->
+    <header class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">Your Repositories</h1>
+        <p class="page-subtitle">
+          Manage and organize your GitHub repositories with powerful filtering and batch operations.
+        </p>
+      </div>
+      
+      <div class="header-stats" *ngIf="store.repositories().length > 0">
+        <div class="stat-item">
+          <span class="stat-value">{{ store.repositories().length }}</span>
+          <span class="stat-label">Total Repos</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ store.selectedRepositories().length }}</span>
+          <span class="stat-label">Selected</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="repo-list-layout">
+      <!-- Left Sidebar: Filters -->
+      <aside class="filters-sidebar">
+        <ui-card>
+          <div class="filters-content">
+            <h3 class="filters-title">
+              <mat-icon>filter_list</mat-icon>
+              Filters
+            </h3>
+            
+            <!-- Quick Filters -->
+            <div class="filter-section">
+              <h4 class="filter-section-title">Quick Filters</h4>
+              <div class="quick-filters">
+                <button 
+                  class="quick-filter"
+                  [class.active]="store.filters().inactive"
+                  (click)="toggleQuickFilter('inactive')">
+                  <mat-icon>schedule</mat-icon>
+                  Inactive (1+ year)
+                </button>
+                <button 
+                  class="quick-filter"
+                  [class.active]="store.filters().noStars"
+                  (click)="toggleQuickFilter('noStars')">
+                  <mat-icon>star_outline</mat-icon>
+                  No Stars
+                </button>
+                <button 
+                  class="quick-filter"
+                  [class.active]="store.filters().forked"
+                  (click)="toggleQuickFilter('forked')">
+                  <mat-icon>fork_right</mat-icon>
+                  Forked
+                </button>
+                <button 
+                  class="quick-filter"
+                  [class.active]="store.filters().archived"
+                  (click)="toggleQuickFilter('archived')">
+                  <mat-icon>archive</mat-icon>
+                  Archived
+                </button>
+              </div>
+            </div>
+
+            <!-- Search -->
+            <div class="filter-section">
+              <h4 class="filter-section-title">Search</h4>
+              <div class="search-input">
+                <mat-icon>search</mat-icon>
+                <input 
+                  type="text"
+                  placeholder="Search repositories..."
+                  [value]="store.filters().search"
+                  (input)="updateFilter('search', $event.target.value)"
+                  class="search-field">
+              </div>
+            </div>
+
+            <!-- Language Filter -->
+            <div class="filter-section" *ngIf="availableLanguages().length > 0">
+              <h4 class="filter-section-title">Language</h4>
+              <div class="language-filters">
+                <button 
+                  *ngFor="let lang of availableLanguages()" 
+                  class="language-chip"
+                  [class.active]="store.filters().language === lang"
+                  (click)="updateFilter('language', store.filters().language === lang ? '' : lang)">
+                  {{ lang }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Visibility Filter -->
+            <div class="filter-section">
+              <h4 class="filter-section-title">Visibility</h4>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input 
+                    type="radio" 
+                    name="visibility" 
+                    value="all"
+                    [checked]="(store.filters().visibility || 'all') === 'all'"
+                    (change)="updateFilter('visibility', 'all')">
+                  <span class="radio-label">All</span>
+                </label>
+                <label class="radio-option">
+                  <input 
+                    type="radio" 
+                    name="visibility" 
+                    value="public"
+                    [checked]="store.filters().visibility === 'public'"
+                    (change)="updateFilter('visibility', 'public')">
+                  <span class="radio-label">Public</span>
+                </label>
+                <label class="radio-option">
+                  <input 
+                    type="radio" 
+                    name="visibility" 
+                    value="private"
+                    [checked]="store.filters().visibility === 'private'"
+                    (change)="updateFilter('visibility', 'private')">
+                  <span class="radio-label">Private</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Clear Filters -->
+            <div class="filter-section">
+              <ui-button 
+                variant="secondary" 
+                [fullWidth]="true"
+                (clicked)="clearAllFilters()">
+                <mat-icon>clear</mat-icon>
+                Clear All Filters
+              </ui-button>
+            </div>
+          </div>
+        </ui-card>
+      </aside>
+
+      <!-- Main Content: Repository List -->
+      <main class="repo-main">
+        <!-- Toolbar -->
+        <div class="repo-toolbar">
+          <div class="toolbar-left">
+            <div class="sort-controls">
+              <label class="sort-label">Sort by:</label>
+              <select 
+                class="sort-select"
+                [value]="store.sortBy()"
+                (change)="updateSort($event)">
+                <option value="updated">Last Updated</option>
+                <option value="name">Name</option>
+                <option value="created">Created</option>
+                <option value="stars">Stars</option>
+                <option value="size">Size</option>
+              </select>
+              <button 
+                class="sort-direction"
+                [class.desc]="store.sortDirection() === 'desc'"
+                (click)="toggleSortDirection()">
+                <mat-icon>{{ store.sortDirection() === 'desc' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+              </button>
+            </div>
+          </div>
+          
+          <div class="toolbar-right">
+            <!-- Batch Actions -->
+            <div class="batch-actions" *ngIf="store.selectedRepositories().length > 0">
+              <ui-button 
+                variant="secondary" 
+                size="sm"
+                (clicked)="batchArchive()"
+                [disabled]="isProcessing()">
+                <mat-icon>archive</mat-icon>
+                Archive ({{ store.selectedRepositories().length }})
+              </ui-button>
+              <ui-button 
+                variant="secondary" 
+                size="sm"
+                (clicked)="batchUnarchive()"
+                [disabled]="isProcessing()">
+                <mat-icon>unarchive</mat-icon>
+                Unarchive ({{ store.selectedRepositories().length }})
+              </ui-button>
+              <ui-button 
+                variant="danger" 
+                size="sm"
+                (clicked)="batchDelete()"
+                [disabled]="isProcessing()">
+                <mat-icon>delete</mat-icon>
+                Delete ({{ store.selectedRepositories().length }})
+              </ui-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-state" *ngIf="store.isLoading()">
+          <div class="loading-spinner">
+            <mat-icon class="spinner">refresh</mat-icon>
+          </div>
+          <p>Loading your repositories...</p>
+        </div>
+
+        <!-- Repository List -->
+        <div class="repo-list" *ngIf="!store.isLoading()">
+          <!-- Select All -->
+          <div class="select-all-row" *ngIf="store.filteredRepositories().length > 0">
+            <label class="select-all-checkbox">
+              <input 
+                type="checkbox"
+                [checked]="isAllSelected()"
+                [indeterminate]="isSomeSelected()"
+                (change)="toggleSelectAll()">
+              <span class="checkbox-label">
+                Select all {{ store.filteredRepositories().length }} repositories
+              </span>
+            </label>
+          </div>
+
+          <!-- Repository Items -->
+          <div class="repo-items" *ngIf="store.filteredRepositories().length > 0">
+            <div 
+              *ngFor="let repo of store.filteredRepositories(); trackBy: trackByRepoId"
+              class="repo-item"
+              [class.selected]="store.isSelected(repo.id)">
+              
+              <div class="repo-checkbox">
+                <input 
+                  type="checkbox"
+                  [checked]="store.isSelected(repo.id)"
+                  (change)="toggleSelection(repo.id)">
+              </div>
+
+              <div class="repo-content">
+                <div class="repo-header">
+                  <h3 class="repo-name">
+                    <a [href]="repo.html_url" target="_blank" rel="noopener">
+                      {{ repo.name }}
+                      <mat-icon class="external-link">open_in_new</mat-icon>
+                    </a>
+                  </h3>
+                  <div class="repo-badges">
+                    <span class="visibility-badge" [class]="repo.private ? 'private' : 'public'">
+                      <mat-icon>{{ repo.private ? 'lock' : 'public' }}</mat-icon>
+                      {{ repo.private ? 'Private' : 'Public' }}
+                    </span>
+                    <span class="fork-badge" *ngIf="repo.fork">
+                      <mat-icon>fork_right</mat-icon>
+                      Fork
+                    </span>
+                    <span class="archived-badge" *ngIf="repo.archived">
+                      <mat-icon>archive</mat-icon>
+                      Archived
+                    </span>
+                  </div>
+                </div>
+
+                <p class="repo-description" *ngIf="repo.description">
+                  {{ repo.description }}
+                </p>
+
+                <div class="repo-stats">
+                  <div class="stat" *ngIf="repo.language">
+                    <span class="language-dot" [style.background-color]="getLanguageColor(repo.language)"></span>
+                    {{ repo.language }}
+                  </div>
+                  <div class="stat" *ngIf="repo.stargazers_count > 0">
+                    <mat-icon>star</mat-icon>
+                    {{ repo.stargazers_count }}
+                  </div>
+                  <div class="stat" *ngIf="repo.forks_count > 0">
+                    <mat-icon>fork_right</mat-icon>
+                    {{ repo.forks_count }}
+                  </div>
+                  <div class="stat">
+                    <mat-icon>schedule</mat-icon>
+                    Updated {{ formatRelativeTime(repo.updated_at) }}
+                  </div>
+                  <div class="stat">
+                    <mat-icon>storage</mat-icon>
+                    {{ formatFileSize(repo.size * 1024) }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="repo-actions">
+                <button 
+                  class="action-button"
+                  [disabled]="isProcessing()"
+                  (click)="toggleArchive(repo)">
+                  <mat-icon>{{ repo.archived ? 'unarchive' : 'archive' }}</mat-icon>
+                </button>
+                <button 
+                  class="action-button danger"
+                  [disabled]="isProcessing()"
+                  (click)="deleteRepository(repo)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="store.filteredRepositories().length === 0 && store.repositories().length > 0">
+            <mat-icon class="empty-icon">search_off</mat-icon>
+            <h3>No repositories found</h3>
+            <p>Try adjusting your filters or search terms.</p>
+            <ui-button variant="secondary" (clicked)="clearAllFilters()">
+              Clear Filters
+            </ui-button>
+          </div>
+
+          <!-- No Repositories -->
+          <div class="no-repos-state" *ngIf="store.repositories().length === 0">
+            <mat-icon class="empty-icon">folder_open</mat-icon>
+            <h3>No repositories found</h3>
+            <p>You don't seem to have any repositories in your GitHub account.</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>

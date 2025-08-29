@@ -99,7 +99,12 @@
               <ol class="help-steps">
                 <li>Go to GitHub → Settings → Developer settings</li>
                 <li>Click "Personal access tokens" → "Tokens (classic)"</li>
-                <li>Generate new token with <strong>repo</strong> permissions</li>
+                <li>Generate new token with the following permissions:
+                  <ul class="permissions-list">
+                    <li><strong>repo</strong> (Full control of private repositories)</li>
+                    <li><strong>delete_repo</strong> (Delete repositories) <span class="required">← Required for deletion</span></li>
+                  </ul>
+                </li>
                 <li>Copy and paste the token above</li>
               </ol>
             </div>

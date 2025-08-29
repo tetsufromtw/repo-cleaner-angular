@@ -238,6 +238,12 @@
   }
 }
 
+@mixin tablet-down {
+  @media (max-width: 1023px) {
+    @content;
+  }
+}
+
 @mixin desktop-up {
   @media (min-width: 1024px) {
     @content;
