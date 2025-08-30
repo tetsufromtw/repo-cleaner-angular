@@ -1,0 +1,27 @@
+# Development Dockerfile
+FROM node:20-alpine
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Expose port 4200
+EXPOSE 4200
+
+# Health check for development
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:4200/ || exit 1
+
+# Start development server
+CMD ["npm", "run", "start", "--", "--host", "0.0.0.0"]
