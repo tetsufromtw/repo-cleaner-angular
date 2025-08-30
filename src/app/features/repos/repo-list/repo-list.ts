@@ -224,11 +224,7 @@ export class RepoListComponent implements OnInit {
       console.log(`📞 [UI] Calling store.deleteRepository with ID: ${repo.id}`);
       await this.store.deleteRepository(repo.id);
       console.log(`✅ [UI] Successfully deleted repository: ${repo.name}`);
-      
-      // 額外の保護として手動でリフレッシュを実行
-      console.log(`🔄 [UI] Manually triggering repository list refresh as backup`);
-      await this.store.loadRepositories(true);
-      console.log(`✅ [UI] Manual refresh completed`);
+      console.log(`ℹ️ [UI] Store will handle repository list refresh automatically`);
       
     } catch (error) {
       console.error(`❌ [UI] Failed to delete repository ${repo.name}:`, error);
@@ -341,5 +337,18 @@ export class RepoListComponent implements OnInit {
     const size = (bytes / Math.pow(1024, i)).toFixed(1);
     
     return `${size} ${sizes[i]}`;
+  }
+
+  // Repository refresh method
+  async refreshRepositories() {
+    if (this.store.loading()) return;
+    
+    console.log(`🔄 [UI] Manual refresh triggered by user`);
+    try {
+      await this.store.refreshRepositories();
+      console.log(`✅ [UI] Manual refresh completed`);
+    } catch (error) {
+      console.error(`❌ [UI] Manual refresh failed:`, error);
+    }
   }
 }
