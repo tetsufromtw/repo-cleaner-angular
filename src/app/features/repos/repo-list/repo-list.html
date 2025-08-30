@@ -9,15 +9,26 @@
         </p>
       </div>
       
-      <div class="header-stats" *ngIf="store.repositories().length > 0">
-        <div class="stat-item">
-          <span class="stat-value">{{ store.repositories().length }}</span>
-          <span class="stat-label">Total Repos</span>
+      <div class="header-actions">
+        <div class="header-stats" *ngIf="store.repositories().length > 0">
+          <div class="stat-item">
+            <span class="stat-value">{{ store.repositories().length }}</span>
+            <span class="stat-label">Total Repos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ store.selectedRepositories().length }}</span>
+            <span class="stat-label">Selected</span>
+          </div>
         </div>
-        <div class="stat-item">
-          <span class="stat-value">{{ store.selectedRepositories().length }}</span>
-          <span class="stat-label">Selected</span>
-        </div>
+        
+        <ui-button 
+          variant="secondary"
+          size="sm"
+          [loading]="store.loading()"
+          (click)="refreshRepositories()"
+          [title]="'Refresh repository list'">
+          <mat-icon>refresh</mat-icon>
+        </ui-button>
       </div>
     </header>
 

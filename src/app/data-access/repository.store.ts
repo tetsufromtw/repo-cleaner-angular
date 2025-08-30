@@ -107,11 +107,16 @@ export class RepositoryStore {
     const cacheExpiry = 5 * 60 * 1000; // 5分キャッシュ
     
     console.log(`🔄 [STORE] loadRepositories called, forceRefresh: ${forceRefresh}`);
+    console.log(`🔄 [STORE] Current repository count: ${this._repositories().length}`);
     
-    // キャッシュチェック
+    // キャッシュチェック - 強制リフレッシュの場合はスキップ
     if (!forceRefresh && lastFetch && Date.now() - lastFetch.getTime() < cacheExpiry) {
       console.log(`📦 [STORE] Using cached repositories, skipping refresh`);
       return;
+    }
+    
+    if (forceRefresh) {
+      console.log(`🔄 [STORE] Force refresh requested - ignoring cache completely`);
     }
     
     try {
@@ -134,9 +139,16 @@ export class RepositoryStore {
       
       if (repositories) {
         console.log(`💾 [STORE] Updating local repository list with ${repositories.length} items`);
+        const previousCount = this._repositories().length;
         this._repositories.set(repositories);
         this._lastFetch.set(new Date());
         console.log(`✅ [STORE] Repository list updated successfully`);
+        console.log(`📊 [STORE] Repository count changed: ${previousCount} → ${repositories.length}`);
+        
+        // 削除されたリポジトリの確認
+        if (previousCount > repositories.length) {
+          console.log(`🗑️ [STORE] ${previousCount - repositories.length} repositories were successfully removed from list`);
+        }
       }
     } catch (error) {
       console.error(`❌ [STORE] Failed to load repositories:`, error);
@@ -317,11 +329,29 @@ export class RepositoryStore {
       // 成功した操作に基づいてローカル状態を更新
       console.log(`🔄 [STORE] Batch operation completed. Successful: ${result.success.length}, Errors: ${result.errors.length}`);
       if (result.success.length > 0) {
-        console.log(`🔄 [STORE] Starting repository list refresh after successful operations...`);
-        await this.loadRepositories(true); // 強制リフレッシュ
-        console.log(`✅ [STORE] Repository list refresh completed`);
+        if (operation.type === 'delete') {
+          // 削除操作の場合は、成功したrepositoryをローカル状態から即座に削除
+          console.log(`🗑️ [STORE] Removing successfully deleted repositories from local state...`);
+          const successIds = result.success.map(repo => repo.id);
+          const currentRepos = this._repositories();
+          const updatedRepos = currentRepos.filter(repo => !successIds.includes(repo.id));
+          
+          console.log(`📊 [STORE] Repository count: ${currentRepos.length} → ${updatedRepos.length} (removed ${successIds.length})`);
+          this._repositories.set(updatedRepos);
+          
+          // 削除したrepositoryの名前をログ出力
+          result.success.forEach(repo => {
+            console.log(`✅ [STORE] Removed ${repo.full_name} from local state`);
+          });
+        } else {
+          // アーカイブ/アンアーカイブの場合はAPI刷新が必要
+          console.log(`🔄 [STORE] Non-delete operation, refreshing from API...`);
+          this._lastFetch.set(null);
+          await this.loadRepositories(true);
+        }
+        console.log(`✅ [STORE] Repository list update completed`);
       } else {
-        console.log(`⚠️ [STORE] No successful operations, skipping repository refresh`);
+        console.log(`⚠️ [STORE] No successful operations, no state update needed`);
       }
       
       // 操作完了後は選択をクリア
@@ -344,6 +374,15 @@ export class RepositoryStore {
    */
   clearError(): void {
     this._error.set(null);
+  }
+
+  /**
+   * 手動でリポジトリリストを刷新
+   */
+  async refreshRepositories(): Promise<void> {
+    console.log(`🔄 [STORE] Manual refresh triggered`);
+    this._lastFetch.set(null);
+    await this.loadRepositories(true);
   }
   
   /**

@@ -17,6 +17,8 @@
 
 ## インストールと起動方法
 
+### 通常のインストール
+
 1. リポジトリをクローン
    ```bash
    git clone https://github.com/tetsufromtw/repo-cleaner-angular.git
@@ -36,6 +38,36 @@
    ```
 4. ブラウザでアクセス
    http://localhost:4200/
+
+### Docker を使った起動方法
+
+#### 開発環境
+```bash
+# リポジトリをクローン
+git clone https://github.com/tetsufromtw/repo-cleaner-angular.git
+cd repo-cleaner-angular
+
+# 開発環境で起動
+docker-compose --profile dev up --build
+
+# ブラウザでアクセス
+# http://localhost:4200/
+```
+
+#### 本番環境
+```bash
+# 本番環境ビルドと起動
+docker-compose up --build
+
+# ブラウザでアクセス
+# http://localhost/
+```
+
+#### Docker を使う利点
+- 環境構築が不要（Node.js、npm のインストール不要）
+- 一貫した実行環境の提供
+- 本番環境と同じ環境でのテストが可能
+- Nginx を使った最適化された配信
 
 ---
 

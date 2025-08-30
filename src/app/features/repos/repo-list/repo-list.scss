@@ -47,6 +47,18 @@
     }
   }
   
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    
+    @include mix.mobile-only {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-md);
+    }
+  }
+
   .header-stats {
     display: flex;
     gap: var(--space-lg);
