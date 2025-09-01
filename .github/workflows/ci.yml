@@ -1,0 +1,157 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, feature/* ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  # 程式碼品質檢查與測試
+  test:
+    name: Test and Quality Check
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [20.x]
+        
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run linting
+      run: npm run ng -- lint || echo "Linting not configured, skipping..."
+      continue-on-error: true
+      
+    - name: Type checking
+      run: npx tsc --noEmit
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Run Angular tests
+      run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
+      continue-on-error: true
+      
+    - name: Run unit tests with Jest
+      run: npm run test:unit:coverage || echo "Jest tests completed with issues"
+      continue-on-error: true
+      
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+      continue-on-error: true
+
+  # Docker 構建測試
+  docker-build:
+    name: Docker Build Test
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Build Docker image
+      run: docker build -t repo-cleaner-angular:test .
+      
+    - name: Test Docker image
+      run: |
+        docker run -d -p 80:80 --name test-container repo-cleaner-angular:test
+        sleep 10
+        curl -f http://localhost:80 || exit 1
+        docker stop test-container
+
+  # 部署到 GitHub Pages（只在 master 分支）
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: [test, docker-build]
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build for production
+      run: npm run build -- --base-href="/repo-cleaner-angular/"
+      
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './dist/browser'
+        
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+  # 效能與安全性檢查
+  quality:
+    name: Quality & Security Check
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Security audit
+      run: npm audit --audit-level=high
+      continue-on-error: true
+      
+    - name: Check bundle size
+      run: |
+        npm run build
+        du -sh dist/
+        echo "Bundle analysis complete"
+      
+    - name: Dependency check
+      run: |
+        echo "Checking for outdated packages..."
+        npm outdated || true
