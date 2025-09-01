@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, feature/unit-test ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [20.x]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run unit tests
+      run: |
+        CHROME_BIN=$(node -e "console.log(require('puppeteer').executablePath())") \
+        npm test -- --watch=false --browsers=ChromeHeadless
+        
+    - name: Build project
+      run: npm run build
+      
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          coverage/
+        retention-days: 30
