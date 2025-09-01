@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, feature/unit-test ]
+    branches: [ master, feature/unit-test ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   test:
@@ -27,10 +27,10 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
-    - name: Run unit tests
+    - name: Run unit tests with coverage
       run: |
         CHROME_BIN=$(node -e "console.log(require('puppeteer').executablePath())") \
-        npm test -- --watch=false --browsers=ChromeHeadless
+        ng test --watch=false --browsers=ChromeHeadless --code-coverage
         
     - name: Build project
       run: npm run build
