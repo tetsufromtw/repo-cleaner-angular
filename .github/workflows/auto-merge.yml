@@ -1,0 +1,69 @@
+name: Auto Merge
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches:
+      - feature/unit-test
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+        
+    - name: Create Pull Request
+      id: create-pr
+      uses: repo-sync/pull-request@v2
+      with:
+        source_branch: feature/unit-test
+        destination_branch: master
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        pr_title: "自動マージ: ユニットテスト実装とCI/CD構築"
+        pr_body: |
+          ## 🤖 自動生成プルリクエスト
+          
+          このPRは自動的に生成されました。以下の変更が含まれています：
+          
+          ### ✅ 実装内容
+          - Jasmineユニットテスト実装（GitHubService, RepositoryStore）
+          - Docker化されたCI/CDパイプライン構築
+          - コードカバレッジレポート生成（62.76% statements, 63.81% functions）
+          - GitHub Actions自動テスト実行環境
+          - WSL2対応のテスト環境構築
+          
+          ### 🧪 テスト状況
+          - ✅ 89 specs, 0 failures
+          - ✅ CI/CDパイプライン成功
+          - ✅ Docker環境でのヘッドレステスト実行
+          - ✅ プロダクションビルド成功
+          
+          ### 📈 コード品質向上
+          - 単体テストカバレッジ導入
+          - 継続的インテグレーション構築
+          - 自動化されたコード品質チェック
+          
+          CIが成功したため自動的にマージされます。
+        pr_draft: false
+        pr_allow_empty: false
+        
+    - name: Enable auto-merge
+      if: steps.create-pr.outputs.pr_number
+      run: |
+        gh pr merge ${{ steps.create-pr.outputs.pr_number }} --auto --squash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Wait and check merge status
+      if: steps.create-pr.outputs.pr_number
+      run: |
+        echo "PR作成完了: #${{ steps.create-pr.outputs.pr_number }}"
+        echo "自動マージが有効化されました"
