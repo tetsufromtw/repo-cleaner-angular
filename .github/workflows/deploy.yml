@@ -37,13 +37,27 @@ jobs:
     - name: Build for production
       run: npm run build -- --base-href="/repo-cleaner-angular/"
     
+    - name: List build output
+      run: |
+        ls -la dist/
+        if [ -d "dist/repo-cleaner-angular/browser" ]; then
+          echo "Found browser directory"
+          ls -la dist/repo-cleaner-angular/browser/
+        elif [ -d "dist/repo-cleaner-angular" ]; then
+          echo "Found repo-cleaner-angular directory"
+          ls -la dist/repo-cleaner-angular/
+        else
+          echo "Build directory structure:"
+          find dist/ -type f -name "index.html"
+        fi
+    
     - name: Setup Pages
       uses: actions/configure-pages@v4
     
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: './dist/repo-cleaner-angular'
+        path: './dist/repo-cleaner-angular/browser'
     
     - name: Deploy to GitHub Pages
       id: deployment
