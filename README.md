@@ -4,6 +4,12 @@
 個人の PAT（Personal Access Token）を貼り付けるだけで、不要なリポジトリを効率的に整理できます。
 日本語・英語・繁体字中国語に対応しています。
 
+## 🚀 オンラインで試す
+
+**ライブデモ：** [https://tetsufromtw.github.io/repo-cleaner-angular/](https://tetsufromtw.github.io/repo-cleaner-angular/)
+
+すぐに使いたい方は上のリンクから直接アクセスできます！GitHub Personal Access Token を用意するだけで、すぐにリポジトリの整理を開始できます。
+
 ### 主な機能
 
 - PAT 認証による安全なリポジトリ操作（トークンはローカルのみで使用）
